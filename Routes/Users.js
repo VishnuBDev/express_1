@@ -4,12 +4,12 @@ const user = require('../Controller/Users')
 
 router.route('/').
 get(user.getUser).
-post((req,res)=>{
-    db.query('INSERT INTO student')
-}).
-delete((req,res)=>{
-    res.send("delete users")
-})
+post(user.addUser)
+
+router.route('/:id').
+get(user.getOneUser).
+delete(user.deleteOneUser).
+put(user.editUser)
 
 
 
