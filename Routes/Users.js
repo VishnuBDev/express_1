@@ -1,17 +1,17 @@
-const express = require("express")
+const express = require('express')
 const router = express.Router()
-const user = require('../Controller/Users')
+const users = require('../Controller/Users')
 
-router.route('/').
-get(user.getUser).
-post(user.addUser)
+router.route('/signup').
+post(users.signup)
 
-router.route('/:id').
-get(user.getOneUser).
-delete(user.deleteOneUser).
-put(user.editUser)
+router.route('/signin').
+post(users.signin)
+
+router.route('/refresh').
+post(users.refresh)
+
+module.exports = router
 
 
 
-
-module.exports =  router
