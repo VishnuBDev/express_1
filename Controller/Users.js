@@ -64,12 +64,17 @@ const refresh = async(req,res) => {
     }
     try{
         jwt.verify(refreshToken,jwtSecret, async(err,user)=>{
-            console.log("user",user)
             if(err){
                 return res.status(403).send("Invalid token")
             }
-            
-
+            const [tokendb] = await db.promise().query('SELECT * from users WHERE Email=?',[user.Email])
+            if(!tokendb || refreshToken!==tokendb[0].refresh_token){
+                console.log("token",tokendb)
+                console.log("backend",tokendb[0].refresh_token)
+                return res.status(403).send("Refresh token mismatch");
+            }
+            const newAccessToken = jwt.sign({UserId:user.UserId,Email:user.Email},jwtSecret,{expiresIn:"1h"})
+            return res.status(200).send({message:"refresh token updated",accessToken:newAccessToken})
         })
     }catch(err){
         return res.status(500).send("error")
@@ -79,45 +84,3 @@ const refresh = async(req,res) => {
 module.exports = {signup,signin,refresh}
     
 
-
-
-// // Refresh Token Endpoint (to refresh the access token)
-// const refreshToken = async (req, res) => {
-//     const { refreshToken } = req.body;
-
-//     if (!refreshToken) {
-//         return res.status(400).send("Refresh token required");
-//     }
-
-//     try {
-//         // Verify the refresh token
-//         jwt.verify(refreshToken, jwtSecret, async (err, user) => {
-//             if (err) {
-//                 return res.status(403).send("Invalid refresh token");
-//             }
-
-//             // Optionally, check if the refresh token matches what's stored in the database for the user
-//             const [storedUser] = await db.promise().query('SELECT * FROM users WHERE Email = ?', [user.Email]);
-//             if (!storedUser || storedUser.refresh_token !== refreshToken) {
-//                 return res.status(403).send("Refresh token mismatch");
-//             }
-
-//             // Generate a new access token
-//             const newAccessToken = jwt.sign(
-//                 { UserId: user.UserId, Email: user.Email },
-//                 jwtSecret,
-//                 { expiresIn: "1h" }  // Access token expires in 1 hour
-//             );
-
-//             return res.status(200).send({
-//                 message: "Access token refreshed",
-//                 accessToken: newAccessToken,
-//             });
-//         });
-//     } catch (err) {
-//         console.error(err); // Log error for debugging purposes
-//         return res.status(500).send({ message: "Error processing request" }); // 500 for server errors
-//     }
-// };
-
-// module.exports = { signin, refreshToken };
