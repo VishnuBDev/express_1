@@ -81,6 +81,20 @@ const refresh = async(req,res) => {
     }
 }
 
-module.exports = {signup,signin,refresh}
+const logout = async(req,res)=>{
+    const {refreshToken} = req.body
+    if(!refreshToken){
+        return res.status(500).send("refresh token required")
+    }
+    try{
+        const decoded = jwt.verify(refreshToken,jwtSecret)
+        await db.promise().query('UPDATE users SET refresh_token = NULL WHERE Email=?',[decoded.Email])
+        return res.status(200).send("log out successful")
+    }catch(err){
+        return res.status(403).send("invalid token")
+    }
+}
+
+module.exports = {signup,signin,refresh,logout}
     
 

@@ -11,6 +11,9 @@ post(users.signin)
 router.route('/refresh').
 post(users.refresh)
 
+router.route('/logout').
+post(users.logout)
+
 module.exports = router
 
 
