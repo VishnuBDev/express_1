@@ -42,8 +42,8 @@ const signin = async(req,res) =>{
         }
         const PasswordCheck = await bcrypt.compare(Password,userData[0].Password)
         if(PasswordCheck){
-            const accessToken = jwt.sign({ UserId:userData[0].UserId, Email:userData[0].Email},jwtSecret,{expiresIn:"1h"})
-            const refreshToken = jwt.sign({UserId:userData[0].UserId,Email:userData[0].Email},jwtSecret,{expiresIn:"7d"})
+            const accessToken = jwt.sign({ UserId:userData[0].UserId, Email:userData[0].Email,role:userData[0].user_role },jwtSecret,{expiresIn:"1h"})
+            const refreshToken = jwt.sign({UserId:userData[0].UserId,Email:userData[0].Email,role:userData[0].user_role},jwtSecret,{expiresIn:"7d"})
             await db.promise().query('UPDATE users SET refresh_token = ? WHERE Email = ?',[refreshToken,Email])
             res.status(200).send({message:"login success",accessToken,refreshToken})
             return

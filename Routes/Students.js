@@ -1,10 +1,11 @@
 const express = require("express")
 const router = express.Router()
 const student = require('../Controller/Students')
+const Validate = require('../Middleware/UserType')
 
 router.route('/').
 get(student.getStudent).
-post(student.addStudent)
+post(Validate.ValidateToken,Validate.Authorize(["admin"]),student.addStudent)
 
 router.route('/:id').
 get(student.getOneStudent).
